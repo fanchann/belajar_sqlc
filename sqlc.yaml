@@ -1,0 +1,9 @@
+version: 2
+sql:
+  - engine: "mysql"
+    queries: "./internal/mysql/queries"
+    schema: "./internal/mysql/schema.sql"
+    gen:
+      go:
+        package: "sqlc"
+        out: "./internal/mysql/sqlc"
