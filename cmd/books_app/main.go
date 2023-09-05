@@ -16,7 +16,8 @@ var (
 )
 
 func main() {
-	db := config.MysqlConnection()
+	cfg := config.New("./.env")
+	db := config.MysqlConnection(cfg)
 
 	// repository
 	repo := repositories.NewBookRepositoriesImpl(db)
