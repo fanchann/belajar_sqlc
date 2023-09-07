@@ -7,13 +7,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"latihan_sqlc/internal/models"
+	"latihan_sqlc/internal/models/domain"
 	mockRepo "latihan_sqlc/internal/repositories/mock"
 )
 
 var (
 	mockBookRepo = mockRepo.IBoookRepositories{mock.Mock{}}
-	fakeData     = []models.Books{
+	fakeData     = []domain.Books{
 		{Id: 1, Title: "Title 1", Author: "Author 1"},
 		{Id: 2, Title: "Title 2", Author: "Author 2"},
 		{Id: 3, Title: "Title 3", Author: "Author 3"},
@@ -22,9 +22,9 @@ var (
 )
 
 func TestAddBook(t *testing.T) {
-	mockBookRepo.On("AddBook", fakeData[0]).Return(models.Books{Id: 1, Title: "Title 1", Author: "Author 1"})
+	mockBookRepo.On("AddBook", fakeData[0]).Return(domain.Books{Id: 1, Title: "Title 1", Author: "Author 1"})
 	successInsert := mockBookRepo.AddBook(fakeData[0])
-	assert.Equal(t, successInsert, models.Books{Id: 1, Title: "Title 1", Author: "Author 1"})
+	assert.Equal(t, successInsert, domain.Books{Id: 1, Title: "Title 1", Author: "Author 1"})
 }
 
 func TestUpdateBook(t *testing.T) {
@@ -50,10 +50,10 @@ func TestGetBookById(t *testing.T) {
 
 	// error
 	t.Run("Error", func(t *testing.T) {
-		mockBookRepo.On("GetBookById", 100).Return(models.Books{}, errors.New("book not found"))
+		mockBookRepo.On("GetBookById", 100).Return(domain.Books{}, errors.New("book not found"))
 		book, err := mockBookRepo.GetBookById(100)
 		assert.NotNil(t, err)
-		assert.Equal(t, book, models.Books{})
+		assert.Equal(t, book, domain.Books{})
 	})
 }
 

@@ -1,11 +1,11 @@
 package repositories
 
-import "latihan_sqlc/internal/models"
+import "latihan_sqlc/internal/models/domain"
 
 type IBoookRepositories interface {
-	AddBook(book models.Books) models.Books
-	GetBookById(id int) (models.Books, error)
-	UpdateBookById(book models.Books) models.Books
-	GetAllBook() []models.Books
-	DeleteBookById(id int) error
+	AddBook(book domain.Books) domain.Books
+	GetBookById(id int) (domain.Books, error)
+	UpdateBookById(book domain.Books) domain.Books
+	GetAllBook() []domain.Books
+	DeleteBookById(book domain.Books) error
 }

@@ -3,7 +3,7 @@
 package mockRepo
 
 import (
-	models "latihan_sqlc/internal/models"
+	domain "latihan_sqlc/internal/models/domain"
 
 	mock "github.com/stretchr/testify/mock"
 )
@@ -14,14 +14,14 @@ type IBoookRepositories struct {
 }
 
 // AddBook provides a mock function with given fields: book
-func (_m *IBoookRepositories) AddBook(book models.Books) models.Books {
+func (_m *IBoookRepositories) AddBook(book domain.Books) domain.Books {
 	ret := _m.Called(book)
 
-	var r0 models.Books
-	if rf, ok := ret.Get(0).(func(models.Books) models.Books); ok {
+	var r0 domain.Books
+	if rf, ok := ret.Get(0).(func(domain.Books) domain.Books); ok {
 		r0 = rf(book)
 	} else {
-		r0 = ret.Get(0).(models.Books)
+		r0 = ret.Get(0).(domain.Books)
 	}
 
 	return r0
@@ -42,15 +42,15 @@ func (_m *IBoookRepositories) DeleteBookById(id int) error {
 }
 
 // GetAllBook provides a mock function with given fields:
-func (_m *IBoookRepositories) GetAllBook() []models.Books {
+func (_m *IBoookRepositories) GetAllBook() []domain.Books {
 	ret := _m.Called()
 
-	var r0 []models.Books
-	if rf, ok := ret.Get(0).(func() []models.Books); ok {
+	var r0 []domain.Books
+	if rf, ok := ret.Get(0).(func() []domain.Books); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]models.Books)
+			r0 = ret.Get(0).([]domain.Books)
 		}
 	}
 
@@ -58,18 +58,18 @@ func (_m *IBoookRepositories) GetAllBook() []models.Books {
 }
 
 // GetBookById provides a mock function with given fields: id
-func (_m *IBoookRepositories) GetBookById(id int) (models.Books, error) {
+func (_m *IBoookRepositories) GetBookById(id int) (domain.Books, error) {
 	ret := _m.Called(id)
 
-	var r0 models.Books
+	var r0 domain.Books
 	var r1 error
-	if rf, ok := ret.Get(0).(func(int) (models.Books, error)); ok {
+	if rf, ok := ret.Get(0).(func(int) (domain.Books, error)); ok {
 		return rf(id)
 	}
-	if rf, ok := ret.Get(0).(func(int) models.Books); ok {
+	if rf, ok := ret.Get(0).(func(int) domain.Books); ok {
 		r0 = rf(id)
 	} else {
-		r0 = ret.Get(0).(models.Books)
+		r0 = ret.Get(0).(domain.Books)
 	}
 
 	if rf, ok := ret.Get(1).(func(int) error); ok {
@@ -82,14 +82,14 @@ func (_m *IBoookRepositories) GetBookById(id int) (models.Books, error) {
 }
 
 // UpdateBookById provides a mock function with given fields: book
-func (_m *IBoookRepositories) UpdateBookById(book models.Books) models.Books {
+func (_m *IBoookRepositories) UpdateBookById(book domain.Books) domain.Books {
 	ret := _m.Called(book)
 
-	var r0 models.Books
-	if rf, ok := ret.Get(0).(func(models.Books) models.Books); ok {
+	var r0 domain.Books
+	if rf, ok := ret.Get(0).(func(domain.Books) domain.Books); ok {
 		r0 = rf(book)
 	} else {
-		r0 = ret.Get(0).(models.Books)
+		r0 = ret.Get(0).(domain.Books)
 	}
 
 	return r0

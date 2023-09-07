@@ -5,25 +5,24 @@ import (
 	"database/sql"
 	"log"
 
-	"latihan_sqlc/internal/models"
+	"latihan_sqlc/internal/models/domain"
 	"latihan_sqlc/internal/mysql/sqlc"
 )
 
-var ctx = context.Background()
-
 type BookRepositoriesImpl struct {
-	Db *sql.DB
+	Ctx context.Context
+	Db  *sql.DB
 }
 
-func NewBookRepositoriesImpl(db *sql.DB) IBoookRepositories {
-	return &BookRepositoriesImpl{Db: db}
+func NewBookRepositoriesImpl(ctx context.Context, db *sql.DB) IBoookRepositories {
+	return &BookRepositoriesImpl{Db: db, Ctx: ctx}
 }
 
-func (r *BookRepositoriesImpl) AddBook(book models.Books) models.Books {
+func (r *BookRepositoriesImpl) AddBook(book domain.Books) domain.Books {
 
 	sqlcQueries := sqlc.New(r.Db)
 
-	result, err := sqlcQueries.AddNewBook(ctx, sqlc.AddNewBookParams{Author: book.Author, Title: book.Title})
+	result, err := sqlcQueries.AddNewBook(r.Ctx, sqlc.AddNewBookParams{Author: book.Author, Title: book.Title})
 	if err != nil {
 		panic(err)
 	}
@@ -33,47 +32,47 @@ func (r *BookRepositoriesImpl) AddBook(book models.Books) models.Books {
 	return book
 }
 
-func (r *BookRepositoriesImpl) GetBookById(id int) (models.Books, error) {
+func (r *BookRepositoriesImpl) GetBookById(id int) (domain.Books, error) {
 
 	sqlcQueries := sqlc.New(r.Db)
-	result, err := sqlcQueries.GetBookById(ctx, int32(id))
+	result, err := sqlcQueries.GetBookById(r.Ctx, int32(id))
 	if err != nil {
-		return models.Books{}, err
+		return domain.Books{}, err
 	}
-	return models.Books{Id: int(result.ID), Author: result.Author, Title: result.Title}, nil
+	return domain.Books{Id: int(result.ID), Author: result.Author, Title: result.Title}, nil
 }
 
-func (r *BookRepositoriesImpl) UpdateBookById(book models.Books) models.Books {
+func (r *BookRepositoriesImpl) UpdateBookById(book domain.Books) domain.Books {
 
 	sqlcQueries := sqlc.New(r.Db)
-	err := sqlcQueries.UpdateBook(ctx, sqlc.UpdateBookParams{ID: int32(book.Id), Author: book.Author})
+	err := sqlcQueries.UpdateBook(r.Ctx, sqlc.UpdateBookParams{ID: int32(book.Id), Author: book.Author})
 	if err != nil {
 		log.Fatalf(err.Error())
-		return models.Books{}
+		return domain.Books{}
 	}
 	return book
 }
 
-func (r *BookRepositoriesImpl) GetAllBook() []models.Books {
+func (r *BookRepositoriesImpl) GetAllBook() []domain.Books {
 
-	var booksModels []models.Books
+	var booksdomain []domain.Books
 	sqlcQueries := sqlc.New(r.Db)
-	books, err := sqlcQueries.GetAllBooks(ctx)
+	books, err := sqlcQueries.GetAllBooks(r.Ctx)
 
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
 
 	for _, book := range books {
-		booksModels = append(booksModels, sqlcBookToModel(book))
+		booksdomain = append(booksdomain, sqlcBookToModel(book))
 	}
-	return booksModels
+	return booksdomain
 }
 
-func (r *BookRepositoriesImpl) DeleteBookById(id int) error {
+func (r *BookRepositoriesImpl) DeleteBookById(book domain.Books) error {
 
 	sqlcQueries := sqlc.New(r.Db)
-	err := sqlcQueries.DeleteAuthor(ctx, int32(id))
+	err := sqlcQueries.DeleteAuthor(r.Ctx, int32(book.Id))
 	if err != nil {
 		log.Fatalf(err.Error())
 		return err
@@ -81,6 +80,6 @@ func (r *BookRepositoriesImpl) DeleteBookById(id int) error {
 	return nil
 }
 
-func sqlcBookToModel(book sqlc.Book) models.Books {
-	return models.Books{Id: int(book.ID), Title: book.Title, Author: book.Author}
+func sqlcBookToModel(book sqlc.Book) domain.Books {
+	return domain.Books{Id: int(book.ID), Title: book.Title, Author: book.Author}
 }
