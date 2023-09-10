@@ -69,6 +69,7 @@ func (cntrl *BookControllerImpl) FindBookById(c *fiber.Ctx) error {
 }
 
 func (cntrl *BookControllerImpl) GetAllBooks(c *fiber.Ctx) error {
+	c.Response().Header.Add("Cache-Time", "6000")
 	bookResponses := cntrl.Service.GetAllBooks()
 	response := web.WebResponse{Code: 200, Status: "OK", Data: bookResponses}
 	return c.JSON(response)

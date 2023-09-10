@@ -3,10 +3,14 @@ package router
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cache"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/fiber/v2/utils"
 
 	"latihan_sqlc/config"
 	"latihan_sqlc/exception"
@@ -44,6 +48,17 @@ func InitializeRouter(appConfig *string) *fiber.App {
 
 			return ctx.Status(code).JSON(web.NewWebResponse(fiber.ErrBadGateway.Code, err.Error(), nil))
 		}})
+
+	c.Use(logger.New(logger.Config{
+		Format:     "[${ip}]:${port}|${status}|${method}|${path}|${latency}\n",
+		TimeFormat: "02-Jan-2006",
+	}))
+	c.Use(cache.New(cache.Config{
+		Expiration: 1 * time.Minute,
+		KeyGenerator: func(c *fiber.Ctx) string {
+			return utils.CopyString(c.Path())
+		},
+	}))
 
 	c.Use(recover.New())
 
