@@ -14,7 +14,7 @@ type BookRepositoriesImpl struct {
 	Db  *sql.DB
 }
 
-func NewBookRepositoriesImpl(ctx context.Context, db *sql.DB) IBoookRepositories {
+func NewBookRepositoriesImpl(ctx context.Context, db *sql.DB) *BookRepositoriesImpl {
 	return &BookRepositoriesImpl{Db: db, Ctx: ctx}
 }
 
@@ -45,7 +45,7 @@ func (r *BookRepositoriesImpl) GetBookById(id int) (domain.Books, error) {
 func (r *BookRepositoriesImpl) UpdateBookById(book domain.Books) domain.Books {
 
 	sqlcQueries := sqlc.New(r.Db)
-	err := sqlcQueries.UpdateBook(r.Ctx, sqlc.UpdateBookParams{ID: int32(book.Id), Author: book.Author})
+	err := sqlcQueries.UpdateBook(r.Ctx, sqlc.UpdateBookParams{ID: int32(book.Id), Author: book.Author, Title: book.Title})
 	if err != nil {
 		log.Fatalf(err.Error())
 		return domain.Books{}

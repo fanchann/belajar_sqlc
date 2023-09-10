@@ -15,53 +15,58 @@ var (
 )
 
 type BookServiceImpl struct {
-	repo     repositories.IBoookRepositories
-	validate *validator.Validate
+	Repo     *repositories.BookRepositoriesImpl
+	Validate *validator.Validate
+}
+
+func NewBookServiceImpl(Repo *repositories.BookRepositoriesImpl, Validate *validator.Validate) *BookServiceImpl {
+	return &BookServiceImpl{Repo: Repo, Validate: Validate}
 }
 
 func (s *BookServiceImpl) AddNewBook(request web.BookCreateForm) web.BookResponse {
-	errValidate = s.validate.Struct(request)
-	utils.PanicIfError(errValidate)
+	errValidate = s.Validate.Struct(&request)
+	if errValidate != nil {
+		panic(exception.NewValidationError(errValidate))
+	}
 
 	book := domain.Books{Title: request.Title, Author: request.Author}
 
-	book = s.repo.AddBook(book)
+	book = s.Repo.AddBook(book)
 
 	return utils.ToBookResponse(book)
 }
 
 func (s *BookServiceImpl) UpdateBook(request web.BookUpdateForm) web.BookResponse {
-	errValidate = s.validate.Struct(request)
-	utils.PanicIfError(errValidate)
-
-	bookData, errNotFound := s.repo.GetBookById(request.Id)
-	if errNotFound != nil {
-		panic(exception.NewNotFoundErr(errNotFound.Error()))
+	errValidate = s.Validate.Struct(&request)
+	if errValidate != nil {
+		panic(exception.NewValidationError(errValidate))
 	}
 
-	bookData.Author = request.Author
-	bookData.Title = request.Title
+	_, errNotFound := s.Repo.GetBookById(request.Id)
+	if errNotFound != nil {
+		panic(exception.NewNotFoundErr(errNotFound))
+	}
 
-	updatedBook := s.repo.UpdateBookById(bookData)
+	updatedBook := s.Repo.UpdateBookById(domain.Books(request))
 	return utils.ToBookResponse(updatedBook)
 }
 
 func (s *BookServiceImpl) Delete(bookId int) {
-	bookData, errNotFound := s.repo.GetBookById(bookId)
+	bookData, errNotFound := s.Repo.GetBookById(bookId)
 	if errNotFound != nil {
-		panic(exception.NewNotFoundErr(errNotFound.Error()))
+		panic(exception.NewNotFoundErr(errNotFound))
 	}
 
-	if errWhileDete := s.repo.DeleteBookById(bookData); errWhileDete != nil {
-		panic(exception.NewNotFoundErr(errWhileDete.Error()))
+	if errWhileDete := s.Repo.DeleteBookById(bookData); errWhileDete != nil {
+		panic(exception.NewNotFoundErr(errWhileDete))
 	}
 
 }
 
 func (s *BookServiceImpl) FindBookById(bookId int) web.BookResponse {
-	bookData, errNotFound := s.repo.GetBookById(bookId)
+	bookData, errNotFound := s.Repo.GetBookById(bookId)
 	if errNotFound != nil {
-		panic(exception.NewNotFoundErr(errNotFound.Error()))
+		panic(exception.NewNotFoundErr(errNotFound))
 	}
 
 	return utils.ToBookResponse(bookData)
@@ -70,7 +75,7 @@ func (s *BookServiceImpl) FindBookById(bookId int) web.BookResponse {
 func (s *BookServiceImpl) GetAllBooks() []web.BookResponse {
 	var booksResponse []web.BookResponse
 
-	booksData := s.repo.GetAllBook()
+	booksData := s.Repo.GetAllBook()
 
 	for _, book := range booksData {
 		booksResponse = append(booksResponse, utils.ToBookResponse(book))
